@@ -1,0 +1,15 @@
+# NestJS build outputs
+dist/
+
+# Coverage
+coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

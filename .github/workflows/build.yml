@@ -1,0 +1,34 @@
+name: Build
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: pnpm/action-setup@v4
+      - name: Install dependencies
+        run: |
+          pnpm install
+      - name: Generate Prisma client
+        run: pnpm db:generate
+      - name: Run type check
+        run: pnpm type-check
+      - name: Run build
+        run: pnpm build

@@ -1,0 +1,27 @@
+# Next.js build outputs
+.next/
+out/
+
+# Sentry
+.env.sentry-build-plugin
+
+# Storybook
+storybook-static/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Prisma generated files (copied from database package)
+generated/
+
+# Generated scripts files
+scripts
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

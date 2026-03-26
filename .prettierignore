@@ -1,0 +1,9 @@
+# Ignore artifacts:
+dist
+build
+coverage
+storybook-static
+
+# Ignore third-party libraries:
+/apps/web/src/components/ui
+/apps/web/lib/shadcn

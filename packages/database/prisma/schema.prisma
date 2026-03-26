@@ -1,0 +1,374 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model property {
+  id          String    @id @default(uuid()) // property id
+  name        String                         // property name
+  description String?                        // property description
+  type        String                         // property type
+  config      Json?                          // property config
+  deletable   Boolean   @default(true)       // property itself is deletable, default is deletable
+  readonly    Boolean                        // property value is readonly
+  alias       String?   @unique              // property alias, unique identifier
+  created_at  DateTime  @default(now())      // create time
+  updated_at  DateTime  @updatedAt           // update time
+  deleted_at  DateTime?                      // soft delete time, null means not deleted
+
+  @@map("property")
+}
+
+model property_single_value {
+  id            String    @id @default(uuid()) // property value id
+  issue_id      Int                            // related issue id
+  property_id   String                         // related property id
+  property_type String                         // property type, redundant storage for query
+  value         String?                        // property value, general storage
+  number_value  Float?                         // number value, used for numeric search and sorting
+  extra         Json?                          // extra data in JSON format
+  created_at    DateTime  @default(now())      // create time
+  updated_at    DateTime  @updatedAt           // update time
+  deleted_at    DateTime?                      // soft delete time, null means not deleted
+
+  @@unique([issue_id, property_id])               // each issue can only have one single value for each property
+  @@index([issue_id])                             // index by issue id, improve query efficiency
+  @@index([property_id])                          // index by property id, improve query efficiency
+  @@map("property_single_value")
+}
+
+model property_multi_value {
+  id            String    @id @default(uuid()) // property value id
+  issue_id      Int                            // related issue id
+  property_id   String                         // related property id
+  property_type String                         // property type, redundant storage for query
+  value         String?                        // property value, general storage
+  number_value  Float?                         // number value, used for numeric search and sorting
+  extra         Json?                          // extra data in JSON format
+  position      Int       @default(0)          // position in the multi-select list
+  created_at    DateTime  @default(now())      // create time
+  updated_at    DateTime  @updatedAt           // update time
+  deleted_at    DateTime?                      // soft delete time, null means not deleted
+
+  @@unique([issue_id, property_id, position])     // ensure each position has only one value
+  @@index([issue_id])                             // index by issue id, improve query efficiency
+  @@index([property_id])                          // index by property id, improve query efficiency
+  @@map("property_multi_value")
+}
+
+model issue {
+  id           Int       @id @default(autoincrement()) // issue ID, primary key
+  created_by   String                         // creator ID
+  workspace_id String?                        // workspace ID, related to workspace
+  property_values Json?                        // property values, for query only
+  created_at   DateTime  @default(now())      // create time
+  updated_at   DateTime  @updatedAt           // update time
+  deleted_at   DateTime?                      // soft delete time, null means not deleted
+
+  @@map("issue")
+}
+
+model harness_worker {
+  id              String   @id @default(uuid())
+  issue_id        Int?
+  devpod_metadata Json?
+  status          String
+  created_at      DateTime @default(now())
+  last_updated_at DateTime
+
+  @@unique([issue_id])
+  @@index([status])
+  @@index([last_updated_at])
+  @@index([status, last_updated_at])
+  @@map("harness_workers")
+}
+
+model project {
+  id               String    @id @default(uuid())
+  workspace_id     String
+  name             String
+  github_repo_url  String
+  repo_base_branch String
+  check_ci_cd      Boolean   @default(false)
+  preview_commands Json?
+  mcp_config       Json?
+  created_by       String
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  deleted_at       DateTime?
+
+  @@index([workspace_id, created_at])
+  @@index([workspace_id, name])
+  @@unique([workspace_id, github_repo_url])
+  @@map("project")
+}
+
+model counter {
+  entity_name   String   @id
+  current_value BigInt
+  description   String?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("counter")
+}
+
+model activity {
+  id            String    @id @default(uuid()) // activity id
+  issue_id      Int                            // related issue id
+  type          String                         // activity type, e.g., 'comment', 'property_change', 'status_change', etc.
+  payload       Json?                          // activity payload, in JSON format, structure depends on the activity type
+  created_by    String                         // activity creator id
+  created_at    DateTime  @default(now())      // create time
+  updated_at    DateTime  @updatedAt           // update time
+
+  @@index([issue_id])                         // index by issue id, improve query efficiency
+  @@index([created_by])                       // index by creator id, improve query efficiency
+  @@index([type])                             // index by activity type, improve query efficiency
+  @@map("activity")
+}
+
+model comment {
+  id           String    @id @default(uuid()) // comment id
+  issue_id     Int                            // related issue id
+  content      String                         // comment content, in markdown format
+  created_by   String                         // comment author id
+  parent_id    String?                        // parent comment id, used for reply function, null means top-level comment
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  deleted_at   DateTime?
+
+  // Self-relation for parent-child comments
+  parent       comment?  @relation("CommentToComment", fields: [parent_id], references: [id])
+  children     comment[] @relation("CommentToComment")
+
+  @@index([issue_id])
+  @@index([created_by])
+  @@index([parent_id])
+  @@map("comment")
+}
+
+model api_key {
+  id           String    @id @default(uuid())
+  name         String?
+  hashed_key   String    @unique
+  prefix       String    @unique
+  created_by   String
+  last_used_at DateTime?
+  expires_at   DateTime?
+  created_at   DateTime  @default(now())
+
+  @@index([created_by])
+  @@map("api_key")
+}
+
+model subscription {
+  id           String    @id @default(uuid())  // subscription id
+  user_id      String                          // user who subscribed
+  issue_id     Int                             // related issue id
+  comment_id   String?                         // related comment id, if not null, means subscribing to a comment
+
+  @@unique([user_id, issue_id, comment_id])    // each user can only subscribe to an issue or a comment once
+  @@index([user_id])                           // index by user id, improve query efficiency
+  @@index([issue_id])                          // index by issue id, improve query efficiency
+  @@index([comment_id])                        // index by comment id, improve query efficiency
+  @@map("subscription")
+}
+
+model notification_payload {
+  id           String                  @id @default(uuid())
+  workspace_id String
+  type         String
+  payload      Json
+  created_at   DateTime                @default(now())
+  deliveries   notification_delivery[]
+
+  @@index([workspace_id, created_at])
+  @@map("notification_payload")
+}
+
+model notification_delivery {
+  id                      String               @id @default(uuid())
+  notification_payload_id String
+  user_id                 String
+  channel_type            String
+  read_at                 DateTime?
+  created_at              DateTime             @default(now())
+  notification_payload    notification_payload @relation(fields: [notification_payload_id], references: [id], onDelete: Cascade)
+
+  @@unique([notification_payload_id, user_id, channel_type])
+  @@index([user_id, channel_type, created_at])
+  @@index([user_id, channel_type, read_at])
+  @@index([notification_payload_id])
+  @@map("notification_delivery")
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  type          String
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Chat {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  title     String?
+  userId    String?
+  model     String?   // AI model used, e.g., 'gpt-4o', 'claude-3-sonnet'
+  metadata  Json?     // Additional chat metadata
+
+  messages  Message[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("chat")
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  chatId    String
+  createdAt DateTime @default(now())
+  role      String   // 'system' | 'user' | 'assistant'
+  metadata  Json?    // Message-level metadata
+
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  parts Part[]
+
+  @@index([chatId])
+  @@index([chatId, createdAt])
+  @@map("message")
+}
+
+model Part {
+  id        String   @id @default(uuid())
+  messageId String
+  order     Int      // Maintain sequence of parts within a message
+  createdAt DateTime @default(now())
+
+  // Part type discriminator
+  type      String   // 'text' | 'reasoning' | 'file' | 'source-url' | 'source-document' | 'tool' | 'data' | 'step-start'
+
+  // === Text Part (type: 'text') ===
+  textContent String? @map("text_content")
+  textState   String? @map("text_state") // 'streaming' | 'done'
+
+  // === Reasoning Part (type: 'reasoning') ===
+  reasoningContent String? @map("reasoning_content")
+  reasoningState   String? @map("reasoning_state") // 'streaming' | 'done'
+
+  // === File Part (type: 'file') ===
+  fileMediaType String? @map("file_mediaType") // IANA media type, e.g., 'image/jpeg'
+  fileUrl       String? @map("file_url")       // URL or Data URL
+  fileFilename  String? @map("file_filename")
+
+  // === Source URL Part (type: 'source-url') ===
+  sourceUrlSourceId String? @map("source_url_sourceId")
+  sourceUrlUrl      String? @map("source_url_url")
+  sourceUrlTitle    String? @map("source_url_title")
+
+  // === Source Document Part (type: 'source-document') ===
+  sourceDocumentSourceId String? @map("source_document_sourceId")
+  sourceDocumentMediaType String? @map("source_document_mediaType")
+  sourceDocumentTitle    String? @map("source_document_title")
+  sourceDocumentFilename String? @map("source_document_filename")
+
+  // === Tool Part (type: 'tool') ===
+  // Tool parts use a flexible JSON structure to support dynamic tool names
+  toolCallId       String? @map("tool_toolCallId")
+  toolName         String? @map("tool_name")         // Tool name, e.g., 'getWeather'
+  toolState        String? @map("tool_state")        // 'input-streaming' | 'input-available' | 'output-available' | 'output-error'
+  toolInput        Json?   @map("tool_input")        // Tool input parameters
+  toolOutput       Json?   @map("tool_output")       // Tool execution result
+  toolErrorText    String? @map("tool_errorText")    // Error message if state is 'output-error'
+  toolProviderExecuted Boolean? @map("tool_providerExecuted")
+
+  // === Data Part (type: 'data') ===
+  dataType String? @map("data_type") // Data type name, e.g., 'weather', 'chart'
+  dataId   String? @map("data_id")
+  dataPayload Json? @map("data_payload") // The actual data content
+
+  // === Step Start Part (type: 'step-start') ===
+  // No additional fields needed for step-start
+
+  // === Common fields ===
+  providerMetadata Json? @map("provider_metadata") // Provider-specific metadata
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@index([messageId, order])
+  @@index([type])
+  @@map("part")
+}

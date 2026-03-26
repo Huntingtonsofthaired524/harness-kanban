@@ -1,0 +1,55 @@
+name: harness-kanban
+
+services:
+  workspace:
+    image: mcr.microsoft.com/devcontainers/javascript-node:22
+    command: sleep infinity
+    working_dir: /workspaces/harness-kanban
+    volumes:
+      - ..:/workspaces/harness-kanban:cached
+    env_file:
+      - ./workspace.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+
+  postgres:
+    image: ghcr.io/pgmq/pg18-pgmq:v1.7.0
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./postgres.env
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U harness_kanban -d harness_kanban_dev']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: quay.io/minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    env_file:
+      - ./minio.env
+
+  browser:
+    image: lscr.io/linuxserver/chromium:latest
+    network_mode: 'service:workspace'
+    shm_size: '1gb'
+    restart: unless-stopped
+    env_file:
+      - ./browser.env
+    volumes:
+      - browser_config:/config
+    depends_on:
+      - workspace
+
+volumes:
+  browser_config:
+  postgres_data:
+  minio_data:

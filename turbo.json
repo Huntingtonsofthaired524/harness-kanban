@@ -1,0 +1,64 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["@repo/database#db:generate", "^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env.production.local", ".env.local", ".env.production", ".env"],
+      "outputs": [".next/**", "!.next/cache/**", ".next-build/**", "!.next-build/cache/**", "dist/**", "generated/**"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "format": {
+      "dependsOn": ["^format"],
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": ["@repo/database#build", "@repo/shared#build"],
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "generate": {
+      "cache": false
+    },
+    "migrate": {
+      "cache": false
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "db:generate": {
+      "cache": false,
+      "outputs": ["generated/**"]
+    }
+  },
+  "globalPassThroughEnv": [
+    "NODE_ENV",
+    "NEXT_RUNTIME",
+    "VERCEL*",
+    "NEXT_PUBLIC_*",
+    "SENTRY_*",
+    "DATABASE_*",
+    "MANAGE_*",
+    "BLOB_*",
+    "APP_BASE_URL",
+    "MINIO_*",
+    "RUNTIME_*",
+    "RUNTIME_API_BASE_URL",
+    "RUNTIME_SOCKET_SERVER_URL"
+  ]
+}

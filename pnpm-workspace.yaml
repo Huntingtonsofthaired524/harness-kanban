@@ -1,0 +1,12 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# Injected workspace packages rely on hard links, which fail with EXDEV in
+# devcontainers when the repo and node_modules live on different devices.
+injectWorkspacePackages: false
+
+
+catalogs:
+  prisma:
+    prisma: latest

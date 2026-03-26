@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+./scripts/sync-agent-docs.sh
+npx lint-staged

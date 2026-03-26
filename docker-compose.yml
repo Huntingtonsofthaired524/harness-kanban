@@ -1,0 +1,100 @@
+services:
+  postgres:
+    container_name: harness-kanban-postgres
+    image: ghcr.io/pgmq/pg18-pgmq:v1.7.0
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgrestemppassword}
+      POSTGRES_DB: ${POSTGRES_DB:-harness_kanban}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_pgmq_data:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    container_name: harness-kanban-minio
+    image: quay.io/minio/minio:latest
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  api:
+    container_name: harness-kanban-api
+    image: ghcr.io/orenoid/harness-kanban-api:latest
+    pull_policy: always
+    env_file:
+      - apps/api-server/.env
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '3001:3001'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  web:
+    container_name: harness-kanban-web
+    image: ghcr.io/orenoid/harness-kanban-web:latest
+    pull_policy: always
+    env_file:
+      - apps/web/.env
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          'fetch("http://127.0.0.1:" + (process.env.PORT || 3000)).then((res) => process.exit(res.ok ? 0 : 1)).catch(() => process.exit(1))',
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  worker:
+    container_name: harness-kanban-worker
+    image: ghcr.io/orenoid/harness-kanban-worker:latest
+    pull_policy: always
+    env_file:
+      - apps/api-server/.env.worker
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - /var/lib/harness-kanban/devpod:/var/lib/harness-kanban/devpod
+      - /var/lib/harness-kanban/docker-config:/var/lib/harness-kanban/docker-config
+      - ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock
+
+volumes:
+  postgres_pgmq_data:
+  minio_data:

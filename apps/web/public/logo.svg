@@ -1,0 +1,16 @@
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gE5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7DD3FC"/>
+      <stop offset="100%" stop-color="#C4B5FD"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 主三角 -->
+  <polygon points="20,172 96,20 172,172"
+           fill="url(#gE5)"/>
+
+  <!-- 右侧折叠面（加厚 + 左移） -->
+  <polygon points="96,20 172,172 134,172 96,104"
+           fill="#BFDBFE"/>
+</svg>

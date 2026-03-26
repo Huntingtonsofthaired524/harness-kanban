@@ -1,0 +1,13 @@
+/* Placeholder (at the top) */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--muted-foreground);
+  pointer-events: none;
+  height: 0;
+}
+
+/* Hidden metadata node */
+.ProseMirror [data-type='hidden-meta-node'] {
+  display: none !important;
+}

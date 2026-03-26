@@ -1,0 +1,95 @@
+{
+  "name": "@repo/shared",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./constants": {
+      "types": "./dist/constants.d.ts",
+      "import": "./dist/constants.mjs",
+      "require": "./dist/constants.js"
+    },
+    "./lib": {
+      "types": "./dist/lib.d.ts",
+      "import": "./dist/lib.mjs",
+      "require": "./dist/lib.js"
+    },
+    "./property/constants": {
+      "types": "./dist/property/constants.d.ts",
+      "import": "./dist/property/constants.mjs",
+      "require": "./dist/property/constants.js"
+    },
+    "./property/types": {
+      "types": "./dist/property/types.d.ts",
+      "import": "./dist/property/types.mjs",
+      "require": "./dist/property/types.js"
+    },
+    "./property/status-config": {
+      "types": "./dist/property/status-config.d.ts",
+      "import": "./dist/property/status-config.mjs",
+      "require": "./dist/property/status-config.js"
+    },
+    "./issue/types": {
+      "types": "./dist/issue/types.d.ts",
+      "import": "./dist/issue/types.mjs",
+      "require": "./dist/issue/types.js"
+    },
+    "./issue/constants": {
+      "types": "./dist/issue/constants.d.ts",
+      "import": "./dist/issue/constants.mjs",
+      "require": "./dist/issue/constants.js"
+    },
+    "./project/types": {
+      "types": "./dist/project/types.d.ts",
+      "import": "./dist/project/types.mjs",
+      "require": "./dist/project/types.js"
+    },
+    "./notification/constants": {
+      "types": "./dist/notification/constants.d.ts",
+      "import": "./dist/notification/constants.mjs",
+      "require": "./dist/notification/constants.js"
+    },
+    "./notification/types": {
+      "types": "./dist/notification/types.d.ts",
+      "import": "./dist/notification/types.mjs",
+      "require": "./dist/notification/types.js"
+    },
+    "./lib/utils/number": {
+      "types": "./dist/lib/utils/number.d.ts",
+      "import": "./dist/lib/utils/number.mjs",
+      "require": "./dist/lib/utils/number.js"
+    },
+    "./lib/utils/datetime": {
+      "types": "./dist/lib/utils/datetime.d.ts",
+      "import": "./dist/lib/utils/datetime.mjs",
+      "require": "./dist/lib/utils/datetime.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "date-fns": "3.6.0",
+    "zod": "^4.0.5"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "eslint": "^9.18.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
+  }
+}
