@@ -21,30 +21,40 @@ Harness Kanban is a cloud-based kanban tool for managing fully containerized cod
 - **👤 Human in the Loop**: Humans and agents alternate responsibility for different lifecycle stages of an issue.
 - **🔔 Async Workflow**: Automatically sends notifications when an issue requires your attention.
 
-Currently, Harness Kanban supports Codex only. Claude Code support is coming very soon.
-
 ## Prerequisites
 
 - Git
 - Docker with Docker Compose
+- GitHub account
 
-## Deployment
+## Quick Start
 
-First-time setup:
+1. Clone the repository and enter the project directory:
 
-```bash
-git clone https://github.com/Orenoid/harness-kanban.git
-cd harness-kanban
-cp apps/api-server/.env.example apps/api-server/.env
-cp apps/web/.env.example apps/web/.env
-cp apps/api-server/.env.worker.example apps/api-server/.env.worker
-```
+   ```bash
+   git clone https://github.com/Orenoid/harness-kanban.git && cd harness-kanban
+   ```
 
-Start the stack:
+2. Start the services:
 
-```bash
-docker compose up -d
-```
+   ```bash
+   docker compose up -d
+   ```
+
+   You can run multiple workers when you need more parallel execution, for example:
+
+   ```bash
+   docker compose up -d --scale worker=3
+   ```
+
+   Each worker automatically claims queued issues after it starts up or after it finishes its current issue.  
+   Start with 1-2 workers, then scale up based on your system's hardware utilization.
+
+   > The number of workers you can run is limited by how many dev containers your machine can handle. Resource usage varies by project, so tune this according to your workload.
+
+3. Register an account, sign in, then open Settings to configure a GitHub token and at least one coding agent. Harness Kanban supports **Claude Code** and **Codex**.
+
+4. Create a project and a new issue, assign it to CodeBot, and you're on a roll.
 
 ## Architecture
 
@@ -54,6 +64,5 @@ Theoretically, you can deploy the worker anywhere that can connect to the projec
 
 ## Future Plans
 
-1. Support more coding agents.
 2. Implement more dynamic scheduling logic so that when an issue is blocked by a human step, such as waiting for review, workers can switch to other available issues.
 3. Build a Linear adapter and detach agent worker scheduling from the built-in kanban so Harness Kanban can integrate with more existing issue management systems.
