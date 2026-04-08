@@ -17,7 +17,7 @@ Collaborate with CodeBot like a real teammate.
 ## Features
 
 - **🔄 Comprehensive Issue Lifecycle**: Issues move through a human-in-the-loop workflow, from requirement clarification to plan review, implementation, help requests, code review, and completion.
-- **🐳 Fully Containerized**: Each agent works in an isolated, full-featured development container where it can install and run project dependencies (including services like databases), preventing cross-task interference and enabling safe parallel execution.
+- **🐳 Fully Containerized**: Each agent runs in an isolated, full-featured development container, can install dependencies like databases, and has YOLO mode on by default.
 - **☁️ Cloud Based**: Both the kanban tool and coding agents can run in the cloud. No local CLI installation required.
 - **🧰 Harness Engineering**: Agents run in a stable environment defined by your dev container specification, and the system forces the AI to keep repairing changes until user-defined validation commands and CI/CD checks pass.
 - **⚡ Highly Scalable**: Built around a scalable worker orchestration architecture. Scale the number of concurrent workers based on your hardware resources. Agents automatically pick up available issues upon startup.
