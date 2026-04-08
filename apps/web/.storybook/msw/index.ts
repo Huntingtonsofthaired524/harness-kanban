@@ -7,9 +7,15 @@ export {
   defaultAgentChats,
 } from './apis/agent'
 export {
+  createIssueActivitiesHandler,
+  createIssueCommentHandler,
+  createIssueCommentsHandler,
+  createIssueHandler,
   createIssuesHandler,
   createMockIssues,
+  createSubscribeIssueHandler,
   createStatusActionsHandler,
+  createUnsubscribeIssueHandler,
   createUpdateIssueHandler,
 } from './apis/issues'
 export { createCodingAgentHandlers, createMockCodingAgents } from './apis/coding-agents'

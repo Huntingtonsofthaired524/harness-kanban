@@ -14,14 +14,21 @@ import {
   createUpdateGithubConnectionHandler,
 } from './apis/github'
 import {
+  createIssueActivitiesHandler,
+  createIssueCommentHandler,
+  createIssueCommentsHandler,
+  createIssueHandler,
   createIssuesHandler,
   createMockIssues,
   createStatusActionsHandler,
+  createSubscribeIssueHandler,
+  createUnsubscribeIssueHandler,
   createUpdateIssueHandler,
 } from './apis/issues'
 import { createProjectsHandler } from './apis/projects'
 import { createPropertiesHandler } from './apis/properties'
 import { createUsersHandler } from './apis/users'
+import type { Activity, Comment } from '@repo/shared/issue/types'
 
 type MswHandler =
   | ReturnType<typeof createAgentChatHandler>
@@ -32,8 +39,14 @@ type MswHandler =
   | ReturnType<typeof createSessionHandler>
   | ReturnType<typeof createSignOutHandler>
   | ReturnType<typeof createIssuesHandler>
+  | ReturnType<typeof createIssueHandler>
   | ReturnType<typeof createUpdateIssueHandler>
   | ReturnType<typeof createStatusActionsHandler>
+  | ReturnType<typeof createIssueActivitiesHandler>
+  | ReturnType<typeof createSubscribeIssueHandler>
+  | ReturnType<typeof createUnsubscribeIssueHandler>
+  | ReturnType<typeof createIssueCommentsHandler>
+  | ReturnType<typeof createIssueCommentHandler>
   | ReturnType<typeof createDeleteGithubConnectionHandler>
   | ReturnType<typeof createGithubBranchesHandler>
   | ReturnType<typeof createGithubConnectionHandler>
@@ -58,7 +71,21 @@ export const defaultMswHandlerGroups: Record<MswHandlerGroupKey, MswHandler[]> =
   properties: [createPropertiesHandler()],
   issues: (() => {
     const issues = createMockIssues()
-    return [createIssuesHandler({ issues }), createUpdateIssueHandler({ issues }), createStatusActionsHandler(issues)]
+    const activities: Activity[] = []
+    const subscriberIds: string[] = []
+    const comments: Comment[] = []
+
+    return [
+      createIssuesHandler({ issues }),
+      createIssueHandler(issues),
+      createUpdateIssueHandler({ issues }),
+      createStatusActionsHandler(issues),
+      createIssueActivitiesHandler({ activities, subscriberIds }),
+      createSubscribeIssueHandler(subscriberIds),
+      createUnsubscribeIssueHandler(subscriberIds),
+      createIssueCommentsHandler(comments),
+      createIssueCommentHandler(comments, activities),
+    ]
   })(),
   projects: [createProjectsHandler()],
   users: [createUsersHandler()],
