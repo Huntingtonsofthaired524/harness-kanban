@@ -4,21 +4,23 @@
 [![Unit Test](https://github.com/Orenoid/harness-kanban/actions/workflows/unittest.yml/badge.svg)](https://github.com/Orenoid/harness-kanban/actions/workflows/unittest.yml)
 [![Storybook Tests](https://github.com/Orenoid/harness-kanban/actions/workflows/storybook-tests.yml/badge.svg)](https://github.com/Orenoid/harness-kanban/actions/workflows/storybook-tests.yml)
 
-> This project is still in the MVP stage. Many features still need refinement, and breaking changes may be introduced as the product evolves.
-
-Harness Kanban is a cloud-based kanban tool for managing fully containerized coding agents that run 24/7 to handle assigned issues.
+Harness Kanban is a cloud-based kanban tool for managing fully containerized coding agents that run 24/7 to handle assigned issues. Currently supports **Codex** and **Claude Code**.
 
 ## Screenshots
 
 ![Harness Kanban screenshot](./.github/images/screenshots-kanban.jpg)
 
+Collaborate with CodeBot like a real teammate.
+
+![Issue detail screenshot](./.github/images/screenshots-issue-activity.png)
+
 ## Features
 
-- **🐳 Fully Containerized**: Coding agents develop in isolated containers, preventing cross-task interference and making parallel execution safer.
+- **🔄 Comprehensive Issue Lifecycle**: Issues move through a human-in-the-loop workflow, from requirement clarification to plan review, implementation, help requests, code review, and completion.
+- **🐳 Fully Containerized**: Each agent works in an isolated, full-featured development container where it can install and run project dependencies (including services like databases), preventing cross-task interference and enabling safe parallel execution.
 - **☁️ Cloud Based**: Both the kanban tool and coding agents can run in the cloud. No local CLI installation required.
-- **⚡ Highly Scalable**: Built around a scalable worker orchestration architecture. Scale the number of concurrent coding agents based on your hardware resources. Agents automatically pick up available issues upon startup.
-- **✅ Quality Assurance**: Automatically applies user-configured self-check instructions and CI/CD results, forcing the AI to fix errors until the code passes all checks.
-- **👤 Human in the Loop**: Humans and agents alternate responsibility for different lifecycle stages of an issue.
+- **🧰 Harness Engineering**: Agents run in a stable environment defined by your dev container specification, and the system forces the AI to keep repairing changes until user-defined validation commands and CI/CD checks pass.
+- **⚡ Highly Scalable**: Built around a scalable worker orchestration architecture. Scale the number of concurrent workers based on your hardware resources. Agents automatically pick up available issues upon startup.
 - **🔔 Async Workflow**: Automatically sends notifications when an issue requires your attention.
 
 ## Prerequisites
@@ -54,7 +56,7 @@ Harness Kanban is a cloud-based kanban tool for managing fully containerized cod
 
 3. Register an account, sign in, then open Settings to configure a GitHub token and at least one coding agent. Harness Kanban supports **Claude Code** and **Codex**.
 
-4. Create a project and a new issue, assign it to CodeBot, and you're on a roll.
+4. Create a project and a new issue, assign it to CodeBot, and you're on a roll. CodeBot will draft a technical plan, hand the issue back for clarification or plan review when needed, continue implementation after approval, and return the issue for code review before completion.
 
 ## Architecture
 
