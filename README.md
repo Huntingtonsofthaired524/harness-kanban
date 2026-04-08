@@ -56,7 +56,7 @@ Collaborate with CodeBot like a real teammate.
 
 3. Register an account, sign in, then open Settings to configure a GitHub token and at least one coding agent. Harness Kanban supports **Claude Code** and **Codex**.
 
-4. Create a project and a new issue, assign it to CodeBot, and you're on a roll. CodeBot will draft a technical plan, hand the issue back for clarification or plan review when needed, continue implementation after approval, and return the issue for code review before completion.
+4. Create a project and a new issue, assign it to CodeBot, and you're on a roll.
 
 ## Architecture
 
