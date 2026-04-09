@@ -277,7 +277,7 @@ describe('HarnessWorkerDevpodService', () => {
         id: 'harness-kanban-issue-101',
         uid: 'default-ai-123',
         provider: { name: 'docker' },
-        ide: { name: 'openvscode' },
+        ide: { name: 'none' },
         source: {
           gitRepository: 'https://github.com/harness-kanban/payments-api',
           gitBranch: 'feature/planning',
@@ -355,8 +355,7 @@ describe('HarnessWorkerDevpodService', () => {
         '--source',
         'git:https://github.com/harness-kanban/payments-api@feature/planning',
         '--ide',
-        'openvscode',
-        '--open-ide=false',
+        'none',
         '--configure-ssh=false',
         '--fallback-image',
         'mcr.microsoft.com/devcontainers/base:ubuntu',
@@ -465,7 +464,7 @@ describe('HarnessWorkerDevpodService', () => {
               name: 'docker',
             },
             ide: {
-              name: 'openvscode',
+              name: 'none',
             },
             source: {
               gitRepository: 'https://github.com/harness-kanban/payments-api',
