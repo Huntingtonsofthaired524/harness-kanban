@@ -129,6 +129,15 @@ export const CreateMode: Story = {
     ) {
       throw new Error('Expected MCP config helper text to render.')
     }
+
+    await waitForCondition(() => canvasElement.textContent?.includes('Validation Commands') ?? false)
+    if (
+      !canvasElement.textContent?.includes(
+        'Commands to run after the Coding Agent makes changes, to verify the changes are correct.',
+      )
+    ) {
+      throw new Error('Expected validation commands helper text to render.')
+    }
   },
 }
 
@@ -183,6 +192,7 @@ export const UpdateMode: Story = {
         repoBaseBranch: 'main',
         checkCiCd: true,
         previewCommands: ['pnpm install', 'pnpm dev'],
+        validationCommands: ['npm run lint', 'npm run test', 'npm run build'],
         mcpConfig: {
           docs: {
             type: 'streamable-http',
@@ -221,6 +231,18 @@ export const UpdateMode: Story = {
     await waitForCondition(() => Boolean(mcpConfigField?.value.includes('"docs"')))
     if (!mcpConfigField?.value.includes('"docs"')) {
       throw new Error('Expected existing MCP config to render in update mode.')
+    }
+
+    await waitForCondition(() => canvasElement.textContent?.includes('Validation Commands') ?? false)
+
+    const validationCommandInputs = canvasElement.querySelectorAll('input[placeholder="Enter validation command"]')
+    if (validationCommandInputs.length === 0) {
+      throw new Error('Expected validation command inputs to render in update mode.')
+    }
+
+    const firstCommandValue = (validationCommandInputs[0] as HTMLInputElement).value
+    if (firstCommandValue !== 'npm run lint') {
+      throw new Error(`Expected first validation command to be "npm run lint" but got "${firstCommandValue}".`)
     }
   },
 }

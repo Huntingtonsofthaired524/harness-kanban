@@ -25,6 +25,7 @@ import {
   UpdateProjectInput,
 } from '@repo/shared/project/types'
 import { ProjectSearchSelect } from './project-search-select'
+import { ValidationCommandsInput } from './validation-commands-input'
 
 const MCP_CONFIG_PLACEHOLDER = `{
   "docs": {
@@ -95,6 +96,7 @@ const projectFormSchema = z.object({
     .min(1, 'Select a repository base branch')
     .max(255, 'Repository base branch must be at most 255 characters'),
   checkCiCd: z.boolean(),
+  validationCommands: z.array(z.string()),
   mcpConfigText: z.string().superRefine((value, ctx) => {
     const parsed = parseProjectMcpConfigText(value)
     if (parsed.error) {
@@ -136,6 +138,7 @@ const projectToFormValues = (project?: Partial<ProjectDetail>): ProjectFormValue
   githubRepoUrl: project?.githubRepoUrl ?? '',
   repoBaseBranch: project?.repoBaseBranch ?? '',
   checkCiCd: project?.checkCiCd ?? false,
+  validationCommands: project?.validationCommands ?? [],
   mcpConfigText: formatProjectMcpConfig(project?.mcpConfig),
 })
 
@@ -251,6 +254,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
         githubRepoUrl: values.githubRepoUrl,
         repoBaseBranch: values.repoBaseBranch,
         checkCiCd: values.checkCiCd,
+        validationCommands: values.validationCommands,
         ...(parsedMcpConfig.config ? { mcpConfig: parsedMcpConfig.config } : {}),
       })
       return
@@ -259,6 +263,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
     await onSubmit({
       name: values.name,
       checkCiCd: values.checkCiCd,
+      validationCommands: values.validationCommands,
       mcpConfig: parsedMcpConfig.config,
     })
   }
@@ -406,6 +411,23 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
             />
           )}
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Validation Commands</Label>
+        <p className="text-muted-foreground text-sm">
+          Commands to run after the Coding Agent makes changes, to verify the changes are correct.
+        </p>
+        <Controller
+          control={control}
+          name="validationCommands"
+          render={({ field }) => <ValidationCommandsInput value={field.value} onChange={field.onChange} />}
+        />
+        {errors.validationCommands ? (
+          <p className="text-sm text-red-500">
+            {errors.validationCommands.root?.message || 'Validation commands are invalid.'}
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-2">
