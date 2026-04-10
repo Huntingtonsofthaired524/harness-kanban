@@ -101,7 +101,6 @@ services:
       retries: 10
 
   worker:
-    container_name: harness-kanban-worker
     image: ghcr.io/orenoid/harness-kanban-worker:latest
     pull_policy: always
     environment:
