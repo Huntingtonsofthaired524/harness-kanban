@@ -1,6 +1,6 @@
 <h1><img src="./apps/web/public/logo.svg" alt="Harness Kanban Logo" height="36" align="center" /> Harness Kanban</h1>
 
-[![Build](https://github.com/Orenoid/harness-kanban/actions/workflows/build.yml/badge.svg)](https://github.com/Orenoid/harness-kanban/actions/workflows/build.yml)
+[![Beta](https://img.shields.io/badge/Status-Beta-yellow)]() [![Build](https://github.com/Orenoid/harness-kanban/actions/workflows/build.yml/badge.svg)](https://github.com/Orenoid/harness-kanban/actions/workflows/build.yml)
 [![Unit Test](https://github.com/Orenoid/harness-kanban/actions/workflows/unittest.yml/badge.svg)](https://github.com/Orenoid/harness-kanban/actions/workflows/unittest.yml)
 [![Storybook Tests](https://github.com/Orenoid/harness-kanban/actions/workflows/storybook-tests.yml/badge.svg)](https://github.com/Orenoid/harness-kanban/actions/workflows/storybook-tests.yml)
 
