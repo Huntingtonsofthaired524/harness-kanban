@@ -107,6 +107,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgrestemppassword@postgres:5432/harness_kanban
       NODE_ENV: production
+      BETTER_AUTH_SECRET: change-me-before-public-deploy
       HARNESS_WORKER_TOOLCHAIN_STORE_DIR: /opt/harness-kanban/toolchains
       HARNESS_WORKER_CODEX_TOOLCHAIN_VERSION: 0.116.0
       HARNESS_WORKER_CLAUDE_CODE_TOOLCHAIN_VERSION: 2.1.92
